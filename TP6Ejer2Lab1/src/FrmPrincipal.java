@@ -36,6 +36,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         Administracion.setText("Administración");
 
         productosMI.setText("Productos");
+        productosMI.addActionListener(this::productosMIActionPerformed);
         Administracion.add(productosMI);
 
         jMenuBar1.add(Administracion);
@@ -43,6 +44,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         Consultas.setText("Consultas");
 
         nombreMI.setText("x Nombre");
+        nombreMI.addActionListener(this::nombreMIActionPerformed);
         Consultas.add(nombreMI);
 
         precioMI.setText("x Precio");
@@ -68,6 +70,16 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void nombreMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nombreMIActionPerformed
+        FrmConsultaNombre ventana = new FrmConsultaNombre(FrmProductos.catalogo);
+        ventana.setVisible(true);
+    }//GEN-LAST:event_nombreMIActionPerformed
+
+    private void productosMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_productosMIActionPerformed
+        FrmProductos ventana = new FrmProductos();
+        ventana.setVisible(true);
+    }//GEN-LAST:event_productosMIActionPerformed
 
 
     public static void main(String args[]) {
