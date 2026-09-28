@@ -10,9 +10,10 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 public class GestionDeProducto extends javax.swing.JFrame {
+    //variables
     private final DefaultTableModel modeloTabla;
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GestionDeProducto.class.getName());
+    private GestorDeProducto gestor;
+    //private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GestionDeProducto.class.getName());
 
     /**
      * Creates new form GestionDeProducto
@@ -20,7 +21,9 @@ public class GestionDeProducto extends javax.swing.JFrame {
     public GestionDeProducto() {
         initComponents();
         
-        //configuracion de las categorias del comboBox
+    // Creamos el objeto que va a administrar los productos
+    gestor = new GestorDeProducto();
+    //configuracion de las categorias del comboBox
     cbxCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(
     new String[]{"Perfumeria","Ropa","Farmacia","limpieza","comestible"}
      ));
@@ -200,54 +203,95 @@ public class GestionDeProducto extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-        // obtenemos la categoria seleccionada
-        String categoria = cbxCategoria.getSelectedItem().toString();
-        
-        //obtenemos el nombre ingresado
-        String nombre = txtNombre.getText().trim();
-        
-        //obtenemos el precio ingresado
-        String precioTexto = txtPrecio.getText().trim();
-        
-        //verificamos que ningun campo este vacio
-        if (nombre.isEmpty()|| precioTexto.isEmpty()){
-            
-            JOptionPane.showMessageDialog(this,"Debe completar todos los campos",
-            "Datos incompletos", JOptionPane.WARNING_MESSAGE);
-            
+       // Obtenemos la categoría seleccionada del ComboBox
+    String categoria = cbxCategoria.getSelectedItem().toString();
+
+    // Obtenemos el nombre ingresado
+    String nombre = txtNombre.getText().trim();
+
+    // Obtenemos el precio como texto
+    String precioTexto = txtPrecio.getText().trim();
+
+    // Verificamos que los campos no estén vacíos
+    if (nombre.isEmpty() || precioTexto.isEmpty()) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Debe completar todos los campos",
+                "Datos incompletos",
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        return;
+    }
+
+    try {
+
+        // Convertimos el precio de String a double
+        double precio = Double.parseDouble(precioTexto);
+
+        // Verificamos que el precio no sea negativo
+        if (precio < 0) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "El precio no puede ser negativo",
+                    "Precio inválido",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
             return;
         }
-        try{
-            //convertir precio a numero
-           double precio = Double.parseDouble(precioTexto);
-            
-            //validar precio negativo
-            if (precio<0){JOptionPane.showMessageDialog(this,"El precio no puede ser negativo","Precio invalido",
-                    
-                    JOptionPane.WARNING_MESSAGE);
-        }
-        
-        
-          // Agregamos una nueva fila a la tabla
-        modeloTabla.addRow(new Object[] {nombre,categoria,precio});
 
-        // Limpiamos los campos después de agregar
+        // Creamos un objeto Producto
+        Producto producto = new Producto(
+                nombre,
+                categoria,
+                precio
+        );
+
+        // Enviamos el producto al gestor
+        gestor.agregarProducto(producto);
+
+        // Actualizamos la tabla
+        actualizarTabla();
+
+        // Limpiamos los campos
         txtNombre.setText("");
         txtPrecio.setText("");
 
-        // Colocamos nuevamente el cursor en Nombre
+        // Volvemos a colocar el cursor en Nombre
         txtNombre.requestFocus();
 
     } catch (NumberFormatException e) {
 
-        // Si el usuario escribió algo que no es un número
+        // Si el precio no es un número válido
         JOptionPane.showMessageDialog(
-            this,
-            "El precio debe ser un número válido.",
-            "Precio inválido",
-            JOptionPane.ERROR_MESSAGE
+                this,
+                "El precio debe ser un número válido.",
+                "Precio inválido",
+                JOptionPane.ERROR_MESSAGE
         );
     }
+    }
+    
+    private void actualizarTabla() {
+
+    // Eliminamos las filas actuales de la tabla
+    modeloTabla.setRowCount(0);
+
+    // Recorremos todos los productos guardados
+    for (Producto producto : gestor.getProductos()) {
+
+        // Agregamos cada producto como una nueva fila
+        modeloTabla.addRow(new Object[]{
+            producto.getNombre(),
+            producto.getCategoria(),
+            producto.getPrecio()
+        });
+    }
+}
+      
 
     }//GEN-LAST:event_btnAgregarActionPerformed
 
@@ -267,6 +311,7 @@ public class GestionDeProducto extends javax.swing.JFrame {
         
     }
 
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
     private javax.swing.JComboBox<String> cbxCategoria;
@@ -284,4 +329,3 @@ public class GestionDeProducto extends javax.swing.JFrame {
     private javax.swing.JTextField txtPrecio;
     // End of variables declaration//GEN-END:variables
 
-}
